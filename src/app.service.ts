@@ -4,8 +4,8 @@ import { Logger } from './Logger.decorator';
 import { UsesLogger } from './UsesLogger.decorator';
 
 @Injectable()
+@UsesLogger('ServiceName')
 export class AppService {
-  @UsesLogger('ServiceName')
   getHello(@Logger logger?: CustomLogger): string {
     logger.log('FooBar, Baz');
     return 'Hello World!';
