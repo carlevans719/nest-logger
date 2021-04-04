@@ -1,17 +1,15 @@
 import CustomLogger from './Logger';
 
 export const UsesLogger = (serviceName?: string) => (target: any) => {
-  const descriptors = Object.getOwnPropertyDescriptors(target.prototype);
-  for (const propertyKey in descriptors) {
+  const propertyKeys = Object.getOwnPropertyNames(target.prototype);
+  for (const propertyKey of propertyKeys) {
     if (
-      typeof descriptors[propertyKey].value === 'function' &&
+      typeof target.prototype[propertyKey] === 'function' &&
       propertyKey !== 'constructor'
     ) {
-      const descriptor = descriptors[propertyKey];
+      const originalMethod = target.prototype[propertyKey];
 
-      const originalMethod = descriptor.value;
-
-      descriptor.value = function (...args: any[]) {
+      target.prototype[propertyKey] = function (...args: any[]) {
         if (
           Reflect.hasOwnMetadata(
             'custom-logger-param-index',
@@ -26,7 +24,7 @@ export const UsesLogger = (serviceName?: string) => (target: any) => {
           );
 
           args[paramIndex] = new CustomLogger(
-            target.constructor.name,
+            target.name,
             propertyKey,
             serviceName || '',
           );
